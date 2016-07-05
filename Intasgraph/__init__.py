@@ -8,4 +8,4 @@ app.config.from_pyfile('app.conf')
 db = SQLAlchemy(app)
 
 from Intasgraph import models, views
-
+aaaaaaa
