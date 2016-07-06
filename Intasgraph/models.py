@@ -1,27 +1,57 @@
 from Intasgraph import db
+from datetime import datetime
+import random
 
 
-class user(db.Model):
+class Comment(db.Model):
+    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+    __tablename__ = 'my_comment'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255), unique=True)
-    address = db.relationship('address', backref='user', lazy='dynamic')
+    content = db.Column(db.String(1024))
+    image_id = db.Column(db.Integer, db.ForeignKey('my_image.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('my_user.id'))
+    status = db.Column(db.Integer, default=0)
+    user = db.relationship('User')
+
+    def __init__(self, content, image_id, user_id):
+        self.content = content
+        self.image_id = image_id
+        self.user_id = user_id
+
+    def __repr__(self):
+        return '<Comment%d %s>' % (self.id, self.content)
+
+
+class Image(db.Model):
+    __tablename__ = "my_image"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    url = db.Column(db.String(512))
+    user_id = db.Column(db.Integer, db.ForeignKey('my_user.id'))
+    created_date = db.Column(db.DateTime)
+    comments = db.relationship('Comment')
+
+    def __init__(self, url, user_id):
+        self.url = url
+        self.user_id = user_id
+        self.created_date = datetime.now()
+
+    def __repr__(self):
+        return '<Image%d %s>' % (self.id, self.url)
+
+
+class User(db.Model):
+    __tablename__ = 'my_user'
+    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(32))
+    head_url = db.Column(db.String(256))
+    images = db.relationship('Image', backref='user', lazy='dynamic')
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.head_url = 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 't.png'
 
     def __repr__(self):
-        return '<User:%s ID:%d Password:%s>' % (self.username, self.id, self.password)
-
-
-class address(db.Model):
-    person_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    addr = db.Column(db.String(255), primary_key=True)
-
-    def __init__(self, person_id, addr):
-        self.person_id = person_id
-        self.addr = addr
-
-    def __repr__(self):
-        return '<user_id: %d address: %s>' % (self.person_id, self.addr)
+        return '<User %d %s>' % (self.id, self.username)
