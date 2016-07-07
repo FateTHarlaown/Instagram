@@ -7,6 +7,7 @@ from sqlalchemy import or_, and_
 from Intasgraph.models import User, Image, Comment
 import random
 
+
 manager = Manager(app)
 
 

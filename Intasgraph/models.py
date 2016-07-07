@@ -1,7 +1,7 @@
 from Intasgraph import db
 from datetime import datetime
 import random
-
+import hashlib
 
 class Comment(db.Model):
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
@@ -43,14 +43,30 @@ class User(db.Model):
     __tablename__ = 'my_user'
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(32))
-    head_url = db.Column(db.String(256))
+    username = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    head_url = db.Column(db.String(255))
+    salt = db.Column(db.String(255))
     images = db.relationship('Image', backref='user', lazy='dynamic')
 
-    def __init__(self, username, password):
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def __init__(self, username, password, salt=''):
         self.username = username
-        self.password = password
+        self.salt = salt
+        m = hashlib.md5()
+        m.update(password + salt)
+        self.password = m.hexdigest()
         self.head_url = 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 't.png'
 
     def __repr__(self):
