@@ -14,6 +14,7 @@ def load_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     return user
 
+
 def redirect_with_msg(target, msg, category):
     if msg is not None:
         flash(msg, category=category)
@@ -23,7 +24,7 @@ def redirect_with_msg(target, msg, category):
 @app.route('/')
 def index():
     images = Image.query.order_by(db.desc(Image.id)).limit(10).all()
-    return render_template('index.html', images = images)
+    return render_template('index.html', images=images)
 
 
 @app.route('/image/<int:image_id>/')
@@ -32,7 +33,7 @@ def image(image_id):
     image = Image.query.get(image_id)
     if image is None:
         return redirect('/')
-    return render_template('pageDetail.html', image = image)
+    return render_template('pageDetail.html', image=image)
 
 
 @app.route('/profile/<int:user_id>/')
@@ -41,7 +42,15 @@ def profile(user_id):
     user = User.query.get(user_id)
     if user is None:
         return redirect('/')
-    return render_template('profile.html', user = user)
+    paginate = Image.query.filter_by(user_id=user_id).paginate(page=1, per_page=3, error_out=False)
+    return render_template('profile.html', user=user, images=paginate.items, has_next=paginate.has_next)
+
+
+@app.route('/profile/images/<int:user_id>/<int:page_id>/<int:page_size>/')
+@login_required
+def user_iamges(user_id, page_id, page_size):
+    paginate = Image.query.filter_by(user_id=user_id).paginate(page=page_id, per_page=page_size, error_out=False)
+    return json.dumps(paginate.items)
 
 
 @app.route('/login/', methods=["GET", "POST"])
