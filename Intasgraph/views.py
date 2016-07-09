@@ -50,7 +50,13 @@ def profile(user_id):
 @login_required
 def user_iamges(user_id, page_id, page_size):
     paginate = Image.query.filter_by(user_id=user_id).paginate(page=page_id, per_page=page_size, error_out=False)
-    return json.dumps(paginate.items)
+    json_data = {'zhang':'SB250', 'has_next':paginate.has_next}
+    images = []
+    for m in paginate.items:
+        imgvo = {'id': m.id, 'url': m.url, 'comment_count': len(m.comments)}
+        images.append(imgvo)
+    json_data['images'] = images
+    return json.dumps(json_data)
 
 
 @app.route('/login/', methods=["GET", "POST"])
