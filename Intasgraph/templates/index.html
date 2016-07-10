@@ -48,5 +48,16 @@
         </div>
     </article>
 {% endfor %}
+    {% if has_next %｝
+    <div class="more-content js-load-more">
+        <a class="_oidfu" href="javascript:void(0);">更多</a>
+    </div>
+    {% endif %}
+    {% block js %}
+    <script type="text/javascript">
+    </script>
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    <script type="text/javascript" src="/static/js/index.js"></script>
+    {% endblock%}
 </div>
 {% endblock%}

@@ -14,4 +14,3 @@ db = SQLAlchemy(app)
 
 from Intasgraph import models, views
 
-

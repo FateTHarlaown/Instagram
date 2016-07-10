@@ -23,8 +23,20 @@ def redirect_with_msg(target, msg, category):
 
 @app.route('/')
 def index():
-    images = Image.query.order_by(db.desc(Image.id)).limit(10).all()
-    return render_template('index.html', images=images)
+    paginate = Image.query.paginate(page=1, per_page=3, error_out=False)
+    return render_template('index.html', images=paginate.items, has_next=paginate.has_next)
+
+
+@app.route('/index/images/<int:page_id>/<int:page_size>/')
+def index_images(page_id, page_size):
+    paginate = Image.query.paginate(page=page_id, per_page=page_size, error_out=False)
+    json_data = {'zhang': 'SB250', 'has_next': paginate.has_next}
+    images = []
+    for m in paginate.items:
+        imgvo = {'id': m.id, 'url': m.url, 'comment_count': len(m.comments)}
+        images.append(imgvo)
+    json_data['images'] = images
+    return json.dumps(json_data)
 
 
 @app.route('/image/<int:image_id>/')
