@@ -16,7 +16,7 @@ $(function () {
         // 常用元素
         that.listEl = $('div.js-image-list');
         // 初始化数据
-        //that.uid = window.uid;//可以改掉了，主页不需要user_id
+        //that.uid = window.uid;
         that.page = 1;
         that.pageSize = 3;
         that.listHasNext = true;
@@ -46,7 +46,7 @@ $(function () {
             return;
         }
         that.requestData({
-            //uid: that.uid,//主页不需要user_id
+            uid: that.uid,
             page: that.page + 1,
             pageSize: that.pageSize,
             call: function (oResult) {
@@ -58,7 +58,7 @@ $(function () {
                 var sHtml = '';
                 $.each(oResult.images, function (nIndex, oImage) {
                     sHtml += that.tpl([
-                         '<a class="item" href="/image/#{id}">',
+                        '<a class="item" href="/image/#{id}">',
                             '<div class="img-box">',
                                 '<img src="#{url}">',
                             '</div>',
@@ -66,7 +66,7 @@ $(function () {
                             '<div class="interaction-wrap">',
                                 '<div class="interaction-item"><i class="icon-comment"></i>#{comment_count}</div>',
                             '</div>',
-                           '<a/>'.join(''), oImage);
+                        '</a>'].join(''), oImage);
                 });
                 sHtml && that.listEl.append(sHtml);
             },

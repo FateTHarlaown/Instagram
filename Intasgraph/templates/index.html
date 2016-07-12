@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block title %}首页-{{current_user.username}}{% endblock%}
-{% block css %}
-/static/styles/pages/index.css
-{% endblock %}
+{% block css %}/static/styles/pages/index.css{% endblock %}
 {% block content %}
 <div class="page-main clearfix">
-    <div class="page js-image-list">
+    <div class="pages js-image-list">
         {% for image in images: %}
             <article class="mod">
                 <header class="mod-hd">
@@ -57,10 +55,12 @@
         <a class="_oidfu" href="javascript:void(0);">更多</a>
     </div>
     {% endif %}
-    {% block js %}
-    <script type="text/javascript"></script>
-    <script type="text/javascript" src="/static/js/jquery.js"></script>
-    <script type="text/javascript" src="/static/js/index.js"></script>
-    {% endblock %}
 </div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    window.uid = 1;
+</script>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript" src="/static/js/index.js"></script>
 {% endblock %}
