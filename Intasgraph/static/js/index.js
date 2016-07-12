@@ -58,7 +58,7 @@ $(function () {
                 var sHtml = '';
                 $.each(oResult.images, function (nIndex, oImage) {
                     sHtml += that.tpl([
-                        '<a class="item" href="/image/#{id}">',
+                         '<a class="item" href="/image/#{id}">',
                             '<div class="img-box">',
                                 '<img src="#{url}">',
                             '</div>',
@@ -66,7 +66,7 @@ $(function () {
                             '<div class="interaction-wrap">',
                                 '<div class="interaction-item"><i class="icon-comment"></i>#{comment_count}</div>',
                             '</div>',
-                        '</a>'].join(''), oImage);
+                           '<a/>'.join(''), oImage);
                 });
                 sHtml && that.listEl.append(sHtml);
             },
