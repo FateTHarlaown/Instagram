@@ -1,7 +1,7 @@
 #-*- encoding=UTF-8 -*-
 
 from Intasgraph import app, db, login_manager
-from models import Image, User
+from models import Image, User, Comment
 from flask import render_template, redirect, flash, get_flashed_messages, request
 from flask_login import login_user, logout_user, login_required, current_user
 import random
@@ -33,7 +33,18 @@ def index_images(page_id, page_size):
     json_data = {'zhang': 'SB250', 'has_next': paginate.has_next}
     images = []
     for m in paginate.items:
-        imgvo = {'id': m.id, 'url': m.url, 'comment_count': len(m.comments)}
+        user = User.query.filter_by(id=m.user_id).first()
+        comments = Comment.query.filter_by(image_id=m.id).all()
+        contens = []
+        cuser_ids = []
+        cuser_names = []
+        for c in comments:
+            contens.append(c.content)
+            cuser_ids.append(c.user_id)
+            cuser_names.append(c.user.username)
+        imgvo = {'image_user_username': user.username, 'image_comments_length': len(m.comments), 'image_id': m.id, \
+                 'image_url': m.url, 'image_user_id': user.id, 'comment_content': contens, 'comment_user_id': cuser_ids,\
+                 'image_user_head_url': user.head_url, 'comment_user_username': cuser_names}
         images.append(imgvo)
     json_data['images'] = images
     return json.dumps(json_data)
