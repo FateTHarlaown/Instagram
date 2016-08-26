@@ -2,12 +2,10 @@
 
 from Intasgraph import app, db, login_manager
 from models import Image, User, Comment
-from flask import render_template, redirect, flash, get_flashed_messages, request
+from flask import render_template, redirect, flash, get_flashed_messages, request, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-import random
-import hashlib
-import json
-
+import os, random, hashlib, json, uuid
+from qiniusdk import qiniu_upload_file
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -135,3 +133,39 @@ def reg():
     if next_page is not None and next_page.startswith('/') > 0:
         return redirect(next_page)
     return redirect('/')
+
+
+@app.route('/logout/')
+def logout():
+    logout_user()
+    return redirect('/')
+
+
+def save_to_local(load_file, file_name):
+    save_dir = app.config['UPLOAD_DIR']
+    load_file.save(os.path.join(save_dir, file_name))
+    return '/image/' + file_name
+
+
+def save_to_cloud(load_file, file_name):
+    return qiniu_upload_file(load_file, file_name);
+
+
+@app.route('/upload/', methods = ["GET", "POST"])
+def upload():
+    load_file = request.files['file']
+    if load_file.filename.find('.') > 0:
+        file_ext = load_file.filename.rsplit('.', 1)[1].strip().lower()
+    if file_ext in app.config['ALLOWED_EXT']:
+        filename = str(uuid.uuid1()).replace('.', '-') + '.' + file_ext
+        #url = save_to_local(load_file, filename)
+        url = save_to_cloud(load_file, filename)
+        if url is not None:
+            db.session.add(Image(url, current_user.id))
+            db.session.commit()
+    return redirect('/profile/%d/' % current_user.id)
+
+
+@app.route('/image/<image_name>')
+def show_image(image_name):
+    return send_from_directory(app.config['UPLOAD_DIR'], image_name)

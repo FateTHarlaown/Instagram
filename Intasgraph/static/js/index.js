@@ -95,7 +95,7 @@ $(function () {
                              ].join(''), dict);
                     }
 
-                    sHtml_part3 =    that.tpl([
+                    sHtml_part3 = that.tpl([
               '  </ul>',
                ' <section class="discuss-edit">',
                   '  <a class="icon-heart"></a>',
